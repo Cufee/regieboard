@@ -3,7 +3,7 @@ regieboard/firefox_profiles
 regieboard/chrome_profiles
 
 #Accounts
-regieboard/accounts
+regieboard/accounts/all_accounts.json
 
 #Notes
 regieboard/notes.py
