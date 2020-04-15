@@ -12,3 +12,6 @@ regieboard/notes.py
 #Exlude logs
 regieboard/*.log
 *.log
+
+#VSCode
+.vscode
