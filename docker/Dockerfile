@@ -16,6 +16,6 @@ RUN useradd apps \
     && chown -v -R apps:apps /home/apps
 
 COPY bootstrap.sh /
-COPY ../regieboard /
-
+COPY ../regieboard /home/apps/
+RUN chown -v -R apps:apps /home/apps
 CMD '/bootstrap.sh'
