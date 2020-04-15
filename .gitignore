@@ -7,3 +7,7 @@ accounts
 
 #Notes
 notes.py
+
+
+#Exlude logs
+*.log
