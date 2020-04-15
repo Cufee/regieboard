@@ -1,6 +1,6 @@
 #Browser profile
-regieboard/chrome_profiles
 regieboard/firefox_profiles
+regieboard/chrome_profiles
 
 #Accounts
 regieboard/accounts
@@ -10,4 +10,5 @@ regieboard/notes.py
 
 
 #Exlude logs
+regieboard/*.log
 *.log
