@@ -1,0 +1,9 @@
+#Browser profile
+chrome_profiles
+firefox_profiles
+
+#Accounts
+accounts
+
+#Notes
+notes.py
