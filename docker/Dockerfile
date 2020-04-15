@@ -3,6 +3,7 @@ FROM ubuntu:18.04
 RUN apt-get update && apt-get clean && apt-get install -y \
     x11vnc \
     xvfb \
+    gnupg2 \
     fluxbox \
     wmctrl \
     wget \
