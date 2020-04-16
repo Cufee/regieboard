@@ -6,23 +6,30 @@ from selenium.webdriver.firefox.options import Options
 from threading import Thread
 import asyncio
 import random
+import os
+os.chdir('/home/apps')
 
 class RegieBoard:
     """Creates a Regie instance"""
-    def __init__(self, profile_id, loop_timer, headless=False):
+    def __init__(self, username, password, loop_timer, headless=False):
+        self.username = username
+        self.password = password
         self.headless = headless
-        self.profile_id = profile_id
-        self.presence_loop_timer = loop_timer
-        self.reset_loop_timer = int(loop_timer * 4)
-        self.check_if_muted_timer = int(loop_timer * 4)
-        self.driver = self.start_driver()
         self.loop = asyncio.get_event_loop()
+        self.presence_lopo_timer = loop_timer
+        self.reset_loop_timer = int(loop_timer * 4)
+        self.check_if_muted_timer = int(loop_timer / 2)
 
     def start(self):
         """Start Regie instance"""
+        #Start driver
+        self.driver = self.start_driver()
+        #Get drop channel
+        self.driver.get(self.get_drop_channel())
         #Loop to check presence status
         asyncio.ensure_future(self.check_if_live())
         asyncio.ensure_future(self.reset_channel())
+        asyncio.ensure_future(self.check_if_muted())
         try:
             self.loop.run_forever()
         except KeyboardInterrupt:
@@ -38,29 +45,33 @@ class RegieBoard:
         self.driver.quit()
 
     def start_driver(self):
-        profiles_path = 'chrome_profiles/ch_p_'
-        profile = f'--user-data-dir={profiles_path}{self.profile_id}'
 
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(profile)
         chrome_options.add_argument('log-level=3')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--disable-extensions')
         chrome_options.add_argument('--disable-default-apps')
         chrome_options.add_argument('--restore-last-session')
+        chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--no-default-browser-check')
+        chrome_options.add_argument('--disable-application-cache')
         chrome_options.add_argument('--disable-features=InfiniteSessionRestore')
         chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
         if self.headless == True:
             chrome_options.add_argument('--headless')
 
-        driver = webdriver.Chrome('driver/chromedriver.exe', options=chrome_options)
+        driver = webdriver.Chrome('/usr/bin/chromedriver', options=chrome_options)
         driver.implicitly_wait(15)
-        driver.get(self.get_drop_channel())
-        self.check_if_muted()
 
         return driver
+
+
+    def driver_twitch_login(self):
+        self.driver.get('https://www.twitch.tv/login')
+        self.driver.find_element_by_xpath('//*[@id="login-username"]').send_keys(self.username)
+        self.driver.find_element_by_xpath('//*[@id="password-input"]').send_keys(self.password, Keys.ENTER)
+
 
     def get_drop_channel(self):
         """Returns a random channel from cache (channels_live.txt)"""
@@ -75,6 +86,7 @@ class RegieBoard:
 
         return channel
 
+    #Need to rewrite
     async def check_if_live(self):
         """Check if the current channel is live and switch to a new channel if not"""
         while True:
@@ -107,33 +119,8 @@ class RegieBoard:
             self.driver.get(channel)
             await asyncio.sleep(self.reset_loop_timer)
 
-
-def run(counter, loop_timer):
-    asyncio.set_event_loop(asyncio.new_event_loop())
-    RegieBoard(counter, loop_timer).start()
-
-def docker_run(counter, loop_timer):
-    RegieBoard(counter, loop_timer).start()
-
-
 def main():
-    instance_count = 16
-    loop_timer = 1800
-    counter = 1
-    threads = []
-    try:
-        #Start Boards
-        while counter <= instance_count+1:
-            t = Thread(target=run, args=(counter, loop_timer))
-            threads.append(t)
-            t.start()
-            counter += 1
-        for t in threads:
-            t.join()
-
-    except KeyboardInterrupt:
-        for t in threads:
-            t.stop()
+    pass
 
 if __name__ == "__main__":
     main()
