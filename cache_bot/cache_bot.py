@@ -42,7 +42,7 @@ def get_drop_channels(driver):
     for index in channel_indexes:
         channel_links.append(f'https://twitch.tv/{all_names[index].text}')
     driver.quit()
-    with open('accounts/channels_live.txt', "w") as file:
+    with open('channels_live.txt', "w") as file:
         for link in channel_links:
             file.write("".join(link) + "\n")
     print(f'Cache is now up to date')

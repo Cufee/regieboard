@@ -14,6 +14,7 @@ class RegieBoard:
         self.profile_id = profile_id
         self.presence_loop_timer = loop_timer
         self.reset_loop_timer = int(loop_timer * 4)
+        self.check_if_muted_timer = int(loop_timer * 4)
         self.driver = self.start_driver()
         self.loop = asyncio.get_event_loop()
 
@@ -62,8 +63,8 @@ class RegieBoard:
         return driver
 
     def get_drop_channel(self):
-        """Returns a random channel from cache (accounts/channels_live.txt)"""
-        with open('accounts/channels_live.txt') as file:
+        """Returns a random channel from cache (channels_live.txt)"""
+        with open('channels_live.txt') as file:
             links_raw = file.readlines()
 
         drop_channels = []
