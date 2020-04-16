@@ -6,6 +6,8 @@ from selenium.webdriver.firefox.options import Options
 from threading import Thread
 import asyncio
 import random
+import os
+
 
 class RegieBoard:
     """Creates a Regie instance"""
@@ -37,7 +39,7 @@ class RegieBoard:
         self.driver.quit()
 
     def start_driver(self):
-        profiles_path = 'chrome_profiles/ch_p_'
+        profiles_path = f'{os.getcwd()}/chrome_profiles/ch_p_'
         profile = f'--user-data-dir={profiles_path}{self.profile_id}'
 
         chrome_options = webdriver.ChromeOptions()
@@ -54,7 +56,7 @@ class RegieBoard:
         if self.headless == True:
             chrome_options.add_argument('--headless')
 
-        driver = webdriver.Chrome('driver/chromedriver.exe', options=chrome_options)
+        driver = webdriver.Chrome(f'{os.getcwd()}/driver/chromedriver.exe', options=chrome_options)
         driver.implicitly_wait(15)
         driver.get(self.get_drop_channel())
         self.check_if_muted()
@@ -63,7 +65,7 @@ class RegieBoard:
 
     def get_drop_channel(self):
         """Returns a random channel from cache (accounts/channels_live.txt)"""
-        with open('accounts/channels_live.txt') as file:
+        with open(f'{os.getcwd()}accounts/channels_live.txt') as file:
             links_raw = file.readlines()
 
         drop_channels = []
@@ -131,6 +133,10 @@ def main():
             t.join()
 
     except KeyboardInterrupt:
+        #Stop Boards
+        while counter <= instance_count+1:
+            RegieBoard(counter, loop_timer).stop()
+            counter += 1
         for t in threads:
             t.stop()
 
