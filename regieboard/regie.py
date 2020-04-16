@@ -90,7 +90,7 @@ class RegieBoard:
                 raise FileNotFoundError
             except FileNotFoundError:
                 await logger('Platform is not Linux or Windows. Unable to select driver!')
-        self.driver = webdriver.Chrome(driver_dir, options=chrome_options)
+        self.driver = webdriver.Chrome(executable_path=driver_dir, options=chrome_options)
         self.driver.implicitly_wait(10)
         return self.driver
 
