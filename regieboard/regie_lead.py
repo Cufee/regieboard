@@ -1,4 +1,4 @@
-import socket, pickle, os, json, configparser, argparse
+import socket, pickle, os, json, configparser, argparse, asyncio
 from regie import RegieBoard
 
 
@@ -22,8 +22,8 @@ async def request_2fa_code(username):
 
 
 async def fresh_start_regie_instance(username, password):
-    regie =  RegieBoard(username, password)
-    regie.start()
+    regie = RegieBoard(username, password)
+    await regie.start()
     return regie
 
 
@@ -54,10 +54,12 @@ def main():
     regie_boards = {}
 
     try:
-        regie = await fresh_start_regie_instance(username, password)
-        regie_boards.update({username: regie})
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        asyncio.ensure_future(fresh_start_regie_instance(username, password))
+        loop.run_forever()
     except KeyboardInterrupt:
-        await full_stop_regie_instance(username, regie_boards)
+        loop.stop()
 
 
 if __name__ == "__main__":

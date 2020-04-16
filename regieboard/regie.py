@@ -20,7 +20,7 @@ class RegieBoard:
     def __init__(self, username=None, password=None, loop_timer=1800, headless=False):
         self.username = username
         self.password = password
-        self.headless = headless
+        self.headless = headless    
         self.loop = asyncio.get_event_loop()
         self.presence_loop_timer = loop_timer
         self.reset_loop_timer = int(loop_timer * 4)
@@ -34,8 +34,9 @@ class RegieBoard:
         self.driver = await self.start_driver()
         #Login to Twitch using self.username and self.password
         await self.driver_twitch_login()
+        await asyncio.sleep(5)
         #Open drop enabled channel
-        self.driver.get(self.get_drop_channel())
+        self.driver.get(await self.get_drop_channel())
         #Waiting for ADs to play
         await asyncio.sleep(31)
         #Confirm mature stream
@@ -50,7 +51,7 @@ class RegieBoard:
             self.loop.run_forever()
         except KeyboardInterrupt:
             self.loop.stop()
-        return
+            exit()
 
     async def slim_start(self):
         """Start Regie without presence loops, return a driver"""
@@ -97,10 +98,7 @@ class RegieBoard:
 
 
     async def driver_twitch_login(self):
-        if self.username is None:
-            await logger('Username or password not provided')
-            return
-        if self.password is None:
+        if self.username or self.password is None:
             await logger('Username or password not provided')
             return
         else:
@@ -108,40 +106,41 @@ class RegieBoard:
                 self.driver.get('https://www.twitch.tv/login')
                 self.driver.find_element_by_xpath('//*[@id="login-username"]').send_keys(self.username)
                 self.driver.find_element_by_xpath('//*[@id="password-input"]').send_keys(self.password, Keys.ENTER)
+                await asyncio.sleep(5)
                 try:
-                    self.driver.find_element_by_xpath('//*[@id="root"]/div/div[1]/div[3]/div/div/div/div[3]')
+                    self.driver.find_element_by_xpath('//*[@id="root"]/div/div[1]/div[3]/div/div/div/div[3]').get_attribute('innerText')
                     await logger('Username or password not correct')
-                    return
+                    exit()
                 except:
                     pass
                 detect_2fa = await self.detect_2fa()
-                if detect_2fa == True:
-                    return False
                 if detect_2fa == False:
-                    await logger('Logged in as username:{self.username}, password:{self.password}')
+                    return False
+                elif detect_2fa == True:
+                    await logger(f'Logged in as username:{self.username}, password:{self.password}')
                     await asyncio.sleep(3)
                     return True
                 else:
-                    await logger('Failed to log in due to 2FA error using username:{self.username}, password:{self.password}')
+                    await logger(f'Failed to log in due to 2FA error using username:{self.username}, password:{self.password}')
+                    exit()
             except:
-                await logger('Failed to log in using username:{self.username}, password:{self.password}')
+                await logger(f'Failed to log in using username:{self.username}, password:{self.password}')
+                exit()
 
-    
+
     async def detect_2fa(self):
         try:
             mobile_2fa = driver.find_element_by_xpath('//*[@id="root"]/div/div[1]/div[3]/div/div/div/div[3]/div/span[1]').get_attribute('innerText')
-            if 'text message' in mobile_2fa:
-                mobile_2fa_detected = True
-            else:
-                await logger(f'Failed to detect 2FA type. ({mobile_2fa})')
+            mobile_2fa_detected = True
+            await logger(f'Found mobile 2FA. ({mobile_2fa})')
+            exit()
         except:
             mobile_2fa_detected = False
         try:
             email_2fa = driver.find_element_by_xpath('//*[@id="root"]/div/div[1]/div[3]/div/div/div/div[3]/div[1]/p[3]').get_attribute(innerText)
-            if 'email' in email_2fa:
-                email_2fa_detected = True
-            else:
-                await logger(f'Failed to detect 2FA type. ({email_2fa})')
+            email_2fa_detected = True
+            await logger(f'Found email 2FA. ({email_2fa})')
+            exit()
         except:
             email_2fa_detected = False
         if mobile_2fa_detected == True:
@@ -175,7 +174,7 @@ class RegieBoard:
                 await logger(f'Stream is live')
             except:
                 await logger(f'Stream is not live, getting new channel')
-                channel = self.get_drop_channel()
+                channel = await self.get_drop_channel()
                 self.driver.get(channel)
             await self.mature_stream_confirm()
             await self.check_if_muted()
@@ -192,22 +191,22 @@ class RegieBoard:
 
     async def check_if_muted(self):
         """Check if the stream is muted"""
+        asyncio.sleep(self.check_if_muted_timer)
         try:
             self.driver.find_element_by_xpath('//*/button[@aria-label="Unmute (m)"]').send_keys('m')
             await logger('Stream was muted')
         except:
             await logger('Stream not muted')
-        asyncio.sleep(self.check_if_muted_timer)
 
     async def reset_channel(self):
         """Force move on to a different channel"""
         while True:
-            channel = self.get_drop_channel()
+            await asyncio.sleep(self.reset_loop_timer)
+            channel = await self.get_drop_channel()
             await logger(f'Force-moving to channel {channel}')
             self.driver.get(channel)
             await self.mature_stream_confirm()
             await self.check_if_muted()
-            await asyncio.sleep(self.reset_loop_timer)
 
 def main():
     print('This function is not directly callable, use import regie.py. Running in test mode with Regie slim-start')
@@ -218,6 +217,7 @@ def main():
         loop.run_forever()
     except KeyboardInterrupt:
         loop.stop()
+        exit()
     
 
 if __name__ == "__main__":
