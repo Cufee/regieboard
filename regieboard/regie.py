@@ -84,7 +84,7 @@ class RegieBoard:
         if platform.system() == 'Linux':
             driver_dir = '/usr/bin/chromedriver'
         if platform.system() == 'Windows':
-            driver_dir = '\\driver\\chromedriver.exe'
+            driver_dir = '\\regieboard\\driver\\chromedriver.exe'
         else:
             try:
                 raise FileNotFoundError
@@ -210,7 +210,7 @@ class RegieBoard:
 
 def main():
     print('This function is not directly callable, use import regie.py. Running in test mode with Regie slim-start')
-    print(os.getcwd() + '\\driver\\chromedriver.exe')
+    print(os.getcwd() + '\\regieboard\\driver\\chromedriver.exe')
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
