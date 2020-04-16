@@ -81,15 +81,16 @@ class RegieBoard:
         chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
         if self.headless == True:
             chrome_options.add_argument('--headless')
-        if platform.system() == 'Linux':
-            driver_dir = '/usr/bin/chromedriver'
-        if platform.system() == 'Windows':
-            driver_dir = '\\regieboard\\driver\\chromedriver.exe'
-        else:
-            try:
-                raise FileNotFoundError
-            except FileNotFoundError:
-                await logger('Platform is not Linux or Windows. Unable to select driver!')
+        # if f'{platform.system()}' == 'Linux':
+        #     driver_dir = '/usr/bin/chromedriver'
+        # if f'{platform.system()}' == 'Windows':
+        #     driver_dir = '\\regieboard\\driver\\chromedriver.exe'
+        # else:
+        #     try:
+        #         raise FileNotFoundError
+        #     except FileNotFoundError:
+        #         await logger(f'Platform is not Linux or Windows. Unable to select driver! {platform.system()}')
+        driver_dir = '/usr/bin/chromedriver'
         self.driver = webdriver.Chrome(executable_path=driver_dir, options=chrome_options)
         self.driver.implicitly_wait(10)
         return self.driver
@@ -210,11 +211,11 @@ class RegieBoard:
 
 def main():
     print('This function is not directly callable, use import regie.py. Running in test mode with Regie slim-start')
-    print(os.getcwd() + '\\regieboard\\driver\\chromedriver.exe')
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(RegieBoard().slim_start())
+        asyncio.ensure_future(RegieBoard().slim_start())
+        loop.run_forever()
     except KeyboardInterrupt:
         loop.stop()
     
