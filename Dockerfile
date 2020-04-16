@@ -12,7 +12,7 @@ RUN apt-get update && apt-get clean && apt-get install -y \
 RUN useradd apps \
     && mkdir -p /home/apps
 
-COPY bootstrap.sh /
-COPY regieboard /home/apps/
+ADD bootstrap.sh /
+ADD regieboard /home/apps/
 RUN chown -v -R apps:apps /home/apps
 CMD '/bootstrap.sh'

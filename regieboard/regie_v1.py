@@ -7,7 +7,7 @@ from threading import Thread
 import asyncio
 import random
 import os
-
+os.chdir('/home/apps')
 
 class RegieBoard:
     """Creates a Regie instance"""
@@ -39,24 +39,25 @@ class RegieBoard:
         self.driver.quit()
 
     def start_driver(self):
-        profiles_path = f'{os.getcwd()}/chrome_profiles/ch_p_'
+        profiles_path = 'chrome_profiles/ch_p_'
         profile = f'--user-data-dir={profiles_path}{self.profile_id}'
 
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument(profile)
         chrome_options.add_argument('log-level=3')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--disable-extensions')
         chrome_options.add_argument('--disable-default-apps')
         chrome_options.add_argument('--restore-last-session')
+        chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--no-default-browser-check')
+        chrome_options.add_argument('--disable-application-cache')
         chrome_options.add_argument('--disable-features=InfiniteSessionRestore')
         chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
         if self.headless == True:
             chrome_options.add_argument('--headless')
 
-        driver = webdriver.Chrome(f'{os.getcwd()}/driver/chromedriver.exe', options=chrome_options)
+        driver = webdriver.Chrome('/usr/bin/chromedriver', options=chrome_options)
         driver.implicitly_wait(15)
         driver.get(self.get_drop_channel())
         self.check_if_muted()
@@ -65,7 +66,7 @@ class RegieBoard:
 
     def get_drop_channel(self):
         """Returns a random channel from cache (accounts/channels_live.txt)"""
-        with open(f'{os.getcwd()}accounts/channels_live.txt') as file:
+        with open('accounts/channels_live.txt') as file:
             links_raw = file.readlines()
 
         drop_channels = []
@@ -118,7 +119,7 @@ def docker_run(counter, loop_timer):
 
 
 def main():
-    instance_count = 16
+    instance_count = 4
     loop_timer = 1800
     counter = 1
     threads = []
