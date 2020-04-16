@@ -6,7 +6,7 @@ regieboard/chrome_profiles
 regieboard/accounts/all_accounts.json
 
 #Notes
-regieboard/notes.py
+notes.py
 
 
 #Exlude logs
