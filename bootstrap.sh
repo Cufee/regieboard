@@ -7,9 +7,11 @@ main() {
     launch_xvfb
     log_i "Starting window manager..."
     launch_window_manager
+    log_i "Starting regie_v1 server..."
+    python3 -u /home/apps/regie_v1.py &
     log_i "Starting VNC server..."
     run_vnc_server
-    run twitchbrut
+
 }
 
 launch_xvfb() {
@@ -26,6 +28,7 @@ launch_xvfb() {
 
     # Set defaults if the user did not specify envs.
     export DISPLAY=${XVFB_DISPLAY:-:1}
+    export PYTHONUNBUFFERED=0
     local screen=${XVFB_SCREEN:-0}
     local resolution=${XVFB_RESOLUTION:-1280x960x24}
     local timeout=${XVFB_TIMEOUT:-5}
@@ -84,9 +87,6 @@ run_vnc_server() {
     wait $!
 }
 
-twitchbrut() {
- python3 /regieboard/regie_v1.py
-}
 log_i() {
     log "[INFO] ${@}"
 }
