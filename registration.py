@@ -72,7 +72,7 @@ def reg_rito():
     driver.find_element_by_tag_name('input').send_keys('KEKCHEBURECK', Keys.ENTER)
     sleep(random.uniform(10.0,15.0))
     driver.find_element_by_tag_name('input').send_keys('Zaq_12345',Keys.TAB, 'Zaq_12345', Keys.ENTER)
-    sleep(random.uniform(1.0,5.0))
+    sleep(random.uniform(1.0,5.0))  
     driver.find_element_by_tag_name('input').click()
     actions.send_keys(Keys.ENTER)
     actions.perform()
