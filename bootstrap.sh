@@ -8,7 +8,7 @@ main() {
     log_i "Starting window manager..."
     launch_window_manager
     log_i "Starting regie_lead server..."
-    python3 -u /home/apps/regie_lead.py --username 'Vovko' --password 'JackASSone#MR11'&
+    python3 -u /home/apps/regie_lead.py &
     log_i "Starting VNC server..."
     run_vnc_server
 

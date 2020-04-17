@@ -34,7 +34,26 @@ def start_driver():
     driver.implicitly_wait(10)
     return driver
 
+class Register():
+    def __init__(self, username, password):
+        #Everything here will be done when this class is called
+        self.username = username
+        self.password = password
+        self.open1()
+
+    def open1(self):
+        print(self.username)
+
 if __name__ == "__main__":
-    driver = start_driver()
-    link = 'google.com'
-    driver.get(link)
+    # driver = start_driver()
+    # link = 'google.com'
+    # driver.get(link)
+    
+    # Register('sdgfsdfg', 'dfghdfhgdfh')
+
+    # loops = [({}, '1'), ('loop2', '2')]
+
+    # for l in loops:
+    #     print(type((l[0])))
+
+    print('hello'[:2])
