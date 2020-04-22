@@ -13,11 +13,13 @@ if platform.system() == 'Windows':
 
 async def logger(msg):
     current_time = datetime.datetime.now()
-    print(f'[{current_time}] {msg}')
+    print(f'[regie_uuid:{current_time}] {msg}')
 
 class RegieBoard:
     """Creates a Regie instance"""
-    def __init__(self, username=None, password=None, loop_timer=1800, headless=False):
+    def __init__(self, regie_uuid, username, password, loop_timer=1800, headless=False):
+        global regie_uuid
+        self.regie_uuid = regie_uuid
         self.username = username
         self.password = password
         self.headless = headless    
@@ -29,7 +31,7 @@ class RegieBoard:
     async def start(self):
         """Start Regie instance"""
         self.start_time = datetime.datetime.now()
-        await logger(f'Starting Regie {self.username}')
+        await logger(f'Starting Regie {self.regie_uuid}')
         #Start driver
         self.driver = await self.start_driver()
         #Login to Twitch using self.username and self.password
@@ -40,18 +42,13 @@ class RegieBoard:
         #Waiting for ADs to play
         await asyncio.sleep(31)
         #Confirm mature stream
-        self.mature_stream_confirm()
+        await self.mature_stream_confirm()
         #Unmute video player
-        self.check_if_muted()
+        await self.check_if_muted()
         #Loop to check presence status
         asyncio.ensure_future(self.check_if_live())
         asyncio.ensure_future(self.reset_channel())
         asyncio.ensure_future(self.check_if_muted())
-        try:
-            self.loop.run_forever()
-        except KeyboardInterrupt:
-            self.loop.stop()
-            exit()
 
     async def slim_start(self):
         """Start Regie without presence loops, return a driver"""
@@ -218,7 +215,7 @@ def main():
     except KeyboardInterrupt:
         loop.stop()
         exit()
-    
+
 
 if __name__ == "__main__":
     main()
