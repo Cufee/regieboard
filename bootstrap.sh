@@ -8,7 +8,7 @@ main() {
     log_i "Starting window manager..."
     launch_window_manager
     log_i "Starting regie_lead server..."
-    python3 -u /home/apps/regie_lead.py --instances 10 &
+    python3 -u /home/apps/regie_lead.py --instances 1 &
     log_i "Starting VNC server..."
     run_vnc_server
 
